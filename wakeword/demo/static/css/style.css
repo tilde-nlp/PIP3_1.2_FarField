@@ -1,0 +1,138 @@
+.content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 50%;
+}
+
+@media only screen and (max-width: 800px) {
+	.content {
+	  width: 90%;
+	}
+}
+
+@media (max-width: 800px) {
+	#model-form {
+		float: left;
+	}
+	#wakeword {
+		font-size: 4rem;
+	}
+	
+	.loader {
+		top: 0;
+	}
+}
+
+@media (min-width: 801px) {
+	#model-form {
+		float: right;
+	}
+	
+	#wakeword {
+		font-size: 6rem;
+	}
+}
+
+#start-recording
+#stop-recording {
+	width: 60%;
+	margin-top: 10px;
+}
+
+#threshold {
+	width: 100%;
+}
+
+.row {
+	margin-bottom: 20px;
+}
+
+#feedback-row {
+	padding-bottom: 1rem;
+}
+
+#wakeword {
+	color: #76142d;
+	font-weight: bold;
+}
+
+.collapse {
+	margin-top: 15px;	
+}
+
+.loader {
+  margin: 0 auto;
+  width: 140px;
+  height: 125px;
+  text-align: center;
+  font-size: 25px;
+  position: absolute;
+  top: 4rem;
+  left: 50%;
+  -webkit-transform: translateY(-50%) translateX(-50%);
+}
+.loader > div {
+  height: 100%;
+  width: 20px;
+  display: inline-block;
+  float: left;
+  margin-left: 2px;
+  -webkit-animation: delay 0.8s infinite ease-in-out;
+  animation: delay 0.8s infinite ease-in-out;
+}
+.loader .bar1 {
+  /* background-color: #754fa0; */
+  	background-color: #696969
+}
+.loader .bar2 {
+  /* background-color: #09b7bf; */
+  -webkit-animation-delay: -0.7s;
+  animation-delay: -0.7s;
+  background-color: #696969
+}
+.loader .bar3 {
+  /* background-color: #90d36b; */
+  -webkit-animation-delay: -0.6s;
+  animation-delay: -0.6s;
+  background-color: #696969
+}
+.loader .bar4 {
+  /* background-color: #f2d40d; */
+  -webkit-animation-delay: -0.5s;
+  animation-delay: -0.5s;
+  background-color: #696969
+}
+.loader .bar5 {
+  /* background-color: #fcb12b; */
+  -webkit-animation-delay: -0.4s;
+  animation-delay: -0.4s;
+  background-color: #696969
+}
+.loader .bar6 {
+  /* background-color: #ed1b72; */
+  -webkit-animation-delay: -0.3s;
+  animation-delay: -0.3s;
+  background-color: #696969
+}
+
+@-webkit-keyframes delay {
+  0%, 40%, 100% {
+    -webkit-transform: scaleY(0.05);
+  }
+  20% {
+    -webkit-transform: scaleY(1);
+  }
+}
+@keyframes delay {
+  0%, 40%, 100% {
+    transform: scaleY(0.05);
+    -webkit-transform: scaleY(0.05);
+  }
+  20% {
+    transform: scaleY(1);
+    -webkit-transform: scaleY(1);
+  }
+}

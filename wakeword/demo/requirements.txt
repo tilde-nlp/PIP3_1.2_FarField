@@ -1,0 +1,6 @@
+tornado==6.1
+websockets==10.3
+tensorflow==2.8.0
+scipy==1.7.0
+SoundFile==0.10.3.post1
+librosa==0.9.1

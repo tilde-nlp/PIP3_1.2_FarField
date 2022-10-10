@@ -1,0 +1,84 @@
+FROM ubuntu:20.04
+# docker build -t montreal -f montreal . 
+# docker run --rm -v $(pwd):/context -it montreal /bin/bash
+
+# download LibriSpeech dataset and lexicon from google drive
+
+# https://github.com/JoshData/cmusphinx-alignment-example
+# http://jrmeyer.github.io/asr/2016/01/09/Installing-CMU-Sphinx-on-Ubuntu.html
+# https://github.com/pettarin/forced-alignment-tools
+
+
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt update \
+    && apt install --yes --no-install-recommends \
+        fontconfig \
+        unzip \
+        wget \
+        python3 \
+        python3-pip \
+        libopenblas-dev \
+        software-properties-common \
+        \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# V1.0.1
+#   RUN wget --output-document montreal.tar.gz https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner/releases/download/v1.0.1/montreal-forced-aligner_linux.tar.gz && \
+#       tar xzf montreal.tar.gz && \
+#       rm montreal.tar.gz
+#   
+#   # https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner/issues/109 affects v1.0.1
+#   # https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner/issues/149
+#   RUN cp montreal-forced-aligner/lib/libpython3.6m.so.1.0 montreal-forced-aligner/lib/libpython3.6m.so && \
+#       rm montreal-forced-aligner/lib/thirdparty/bin/libopenblas.so.0
+
+RUN apt-get clean && apt-get update && apt-get install -y locales
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV SHELL /bin/bash
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt update \
+    && apt install --yes --no-install-recommends \
+    libsndfile1 \
+    automake \
+    curl \
+    build-essential
+
+# switch to bash within the container
+SHELL ["/bin/bash", "-c"]
+
+RUN curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    bash Miniconda3-latest-Linux-x86_64.sh -p /miniconda -b &&  \
+    rm Miniconda3-latest-Linux-x86_64.sh
+
+ENV PATH /miniconda/bin:$PATH
+
+RUN conda update -y conda
+RUN conda install -y -c conda-forge openblas openfst pynini ngram baumwelch
+
+
+# make a different user so we do not write files out as root
+# https://medium.com/redbubble/running-a-docker-container-as-a-non-root-user-7d2e00f8ee15
+# https://vsupalov.com/docker-shared-permissions/
+# https://stackoverflow.com/questions/27701930/how-to-add-users-to-docker-container
+# https://docs.docker.com/engine/reference/builder/#user
+RUN addgroup --gid 1000 mark
+RUN adduser --disabled-password --gecos '' --uid 1000 --gid 1000 mark
+USER mark
+WORKDIR /home/mark/
+ENV PATH /home/mark/.local/bin:$PATH
+
+# V2.0.0a11
+RUN pip install montreal-forced-aligner
+RUN mfa thirdparty download
+
+WORKDIR /home/mark/montreal-forced-aligner
+
+# bin/mfa_align /context/Librispeech /context/librispeech-lexicon.txt pretrained_models/english.zip ./
+# Done! Everything took 320.79427099227905 seconds
