@@ -1,6 +1,9 @@
 tornado==6.1
 websockets==10.3
 tensorflow==2.8.0
-scipy==1.7.0
+scipy==1.7.2
 SoundFile==0.10.3.post1
 librosa==0.9.1
+protobuf==3.20.*
+pydub==0.25.1
+audiomentations==0.28.0

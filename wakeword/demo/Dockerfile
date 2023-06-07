@@ -1,4 +1,8 @@
-FROM python:3.9
+FROM nvidia/cuda:11.2.0-cudnn8-runtime-ubuntu20.04
+
+RUN apt-get update && apt-get install --no-install-recommends --no-install-suggests -y curl
+RUN apt-get -y install python3 python3-pip
+RUN pip install numpy==1.22.4
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -6,19 +10,13 @@ COPY . /usr/src/app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV SSH_PASSWD "root:Docker!"
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends dialog \
-        && apt-get update \
-	&& apt-get install -y --no-install-recommends openssh-server \
-	&& echo "$SSH_PASSWD" | chpasswd 
+        && apt-get install -y --no-install-recommends dialog
 
 RUN apt-get install -y libsndfile1
 
 RUN ls
 
-COPY ./sshd_config /etc/ssh/
+EXPOSE 8080 8083
 
-EXPOSE 8080 2222
-
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["python3", "main.py"]

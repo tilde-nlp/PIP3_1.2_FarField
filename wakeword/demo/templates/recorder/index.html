@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta property="og:image:secure_url" content="record/images/TTS_palidzi.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1280">
+    <meta property="og:image:height" content="720">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wake-word recorder</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="record/css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="record/css/main.css"/>
+    <script src="https://www.WebRTC-Experiment.com/RecordRTC.js"></script>
+</head>
+<body>
+<section class="description">
+    <div id="imgHolder">
+        <img src="record/svg/Loks.svg"/>
+    </div>
+    <h1>Few-shot wake word detection</h1>
+    <p>A prototype for few-shot wake word detection. Please record 5 examples of your new wake word. Note that recording is limited to 1 second!</p>
+</section>
+
+<!-- per record content -->
+<div class="recordStuff">
+    <div class="recordBackground">
+        <img src="record/svg/divi%20tristuri.svg"/>
+    </div>
+    <div class="recordContainer">
+        <section class="record">            
+            <form action="/submit" enctype="multipart/form-data" method="post">
+                {% module xsrf_form_html() %}
+                <div class="ww_name">
+                    Wake word id:
+                    <input type="text" name="ww" value="" placeholder="new_model"/>
+                </div>
+                <fieldset>                    
+                    <button class="btn-start-recording" id="btn-start-recording0">&#128308; Record</button>
+                    <div><audio id="audio0" controls autoplay playsinline></audio></div>
+                </fieldset>
+                <fieldset>                    
+                    <button class="btn-start-recording" id="btn-start-recording1">&#128308; Record</button>
+                    <div><audio id="audio1" controls autoplay playsinline></audio></div>
+                </fieldset>
+                <fieldset>                    
+                    <button class="btn-start-recording" id="btn-start-recording2">&#128308; Record</button>
+                    <div><audio id="audio2" controls autoplay playsinline></audio></div>
+                </fieldset>
+                <fieldset>                    
+                    <button class="btn-start-recording" id="btn-start-recording3">&#128308; Record</button>
+                    <div><audio id="audio3" controls autoplay playsinline></audio></div>
+                </fieldset>
+                <fieldset>                    
+                    <button class="btn-start-recording" id="btn-start-recording4">&#128308; Record</button>
+                    <div><audio id="audio4" controls autoplay playsinline></audio></div>
+                </fieldset>
+                <input id="submit" type="submit" value="Submit"/>
+            </form>
+        </section>
+    </div>
+</div>
+<script>
+var recorder = null;
+var blobs = {};
+
+function captureMicrophone(callback) {
+    if(microphone) {
+        callback(microphone);
+        return;
+    }
+    if(typeof navigator.mediaDevices === 'undefined' || !navigator.mediaDevices.getUserMedia) {
+        alert('This browser does not supports WebRTC getUserMedia API.');
+        if(!!navigator.getUserMedia) {
+            alert('This browser seems supporting deprecated getUserMedia API.');
+        }
+    }
+    navigator.mediaDevices.getUserMedia({
+        audio: isEdge ? true : {
+            echoCancellation: false
+        }
+    }).then(function(mic) {
+        callback(mic);
+    }).catch(function(error) {
+        alert('Unable to capture your microphone. Please check console logs.');
+        console.error(error);
+    });
+}
+function replaceAudio(dst, src) {
+    var newAudio = document.createElement('audio');
+    newAudio.controls = true;
+    newAudio.autoplay = true;
+    if(src) {
+        newAudio.src = src;
+    }
+    
+    var parentNode = dst.parentNode;
+    newAudio.id = dst.id;
+    parentNode.innerHTML = '';
+    parentNode.appendChild(newAudio);    
+    dst = newAudio;
+}
+function stopRecordingCallback(id, blob) {
+    let audio = document.getElementById("audio" + id)
+    let startButton = document.getElementById("btn-start-recording" + id);
+    if (blobs[id]) return;
+    blobs[id] = blob;
+    // update audio 
+    replaceAudio(audio, URL.createObjectURL(blob));
+    
+    startButton.style.display = "inline-block";
+    setTimeout(function() {
+        let newAudio = document.getElementById("audio" + id)
+        if(!newAudio.paused) return;
+        setTimeout(function() {
+            let newAudio = document.getElementById("audio" + id)
+            if(!newAudio.paused) return;
+            newAudio.play();
+        }, 1000);
+        
+        newAudio.play();
+    }, 300);
+}
+function startRecording(id, ev) {
+    target = ev.currentTarget;    
+    let audio = document.getElementById("audio" + id);
+    blobs[id] = null;
+    ev.preventDefault();
+    target.style.display = "none"
+    target.style.border = '';
+    target.style.fontSize = '';
+    if (!microphone) {
+        captureMicrophone(function(mic) {
+            microphone = mic;
+            if(isSafari) {
+                replaceAudio(audio);
+                audio.muted = true;
+                audio.srcObject = microphone;
+                target.style.display = "inline-block"
+                target.style.border = '1px solid red';
+                target.style.fontSize = '150%';
+                // ask to press button again?
+                return;
+            }
+            click(target);
+        });
+        return;
+    }
+    replaceAudio(audio);
+    audio.muted = true;
+    audio.srcObject = microphone;
+    var options = {
+        type: 'audio',
+        mimeType: "audio/wav",
+        recorderType: StereoAudioRecorder,
+        desiredSampRate: 16000,
+        numberOfAudioChannels: isEdge ? 1 : 2,
+        checkForInactiveTracks: true,
+        bufferSize: 16384,
+        // get intervals based blobs
+        // value in milliseconds
+        timeSlice: 1000,
+        // requires timeSlice above
+        // returns blob via callback function
+        //ondataavailable: function(blob) {recorder.stopRecording(); stopRecordingCallback(id, blob);}
+    };
+    if(isSafari || isEdge) {
+        options.recorderType = StereoAudioRecorder;
+    }
+    if(navigator.platform && navigator.platform.toString().toLowerCase().indexOf('win') === -1) {
+        options.sampleRate = 16000;
+    }
+    if(isSafari) {
+        options.sampleRate = 16000;
+        options.bufferSize = 4096;
+        options.numberOfAudioChannels = 2;
+    }
+    if(recorder) {
+        recorder.destroy();
+        recorder = null;
+    }
+    recorder = RecordRTC(microphone, options);
+    recorder.setRecordingDuration(1000).onRecordingStopped(function() {stopRecordingCallback(id, recorder.getBlob())});
+    recorder.startRecording();
+}
+var isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
+var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+var recorder; // globally accessible
+var microphone;
+
+var btnSubmitRecording = document.getElementById('submit');
+
+for (let i = 0; i < 5; i++) {
+
+    var btnStartRecording = document.getElementById('btn-start-recording' + i.toString());    
+    
+    btnStartRecording.onclick = function(ev) {
+        startRecording(i.toString(), ev);
+    };
+}
+
+function click(el) {
+    el.disabled = false; // make sure that element is not disabled
+    var evt = document.createEvent('Event');
+    evt.initEvent('click', true, true);
+    el.dispatchEvent(evt);
+}
+
+btnSubmitRecording.onclick = function(ev) {
+    ev.preventDefault();
+    if (! recorder) {
+        return;
+    }
+    if (recorder.getState() == "recording") {
+        return;
+    }
+    if (!document.getElementsByName("ww")[0].value) {
+        return;
+    }
+
+    // update form
+    var form = document.querySelector("form");
+    var formData = new FormData(form);
+    for (const k in blobs) {
+        formData.append("f"+k, blobs[k], "audio"+k+".wav");
+    }
+    // send
+    request = new XMLHttpRequest();
+    request.open(
+            "POST",
+            "/upload",
+            true
+    );
+    request.onreadystatechange = function () {
+        if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+            let _xsrf = formData.get("_xsrf");
+            let name = formData.get("ww");
+            let path = request.responseText;
+            form.innerHTML = "Submitted! Training in progress...";            
+            trainModel(name, path, _xsrf);
+        } else if (request.status !== 200) {
+            form.innerHTML = "Sorry. Something went wrong.";
+        }
+    };
+    request.send(formData);
+}
+
+function trainModel(name, path, _xsrf) {
+    const xhr = new XMLHttpRequest();
+    var form = document.querySelector("form");
+    xhr.open("POST", '/train?_xsrf=' + _xsrf, true);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.onreadystatechange = () => { // Call a function when the state changes.
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            // Request finished. Do processing here.
+            let models = JSON.parse(xhr.responseText).models;
+            form.innerHTML = "Registering model...";
+            registerModel(name, models, _xsrf);
+        } else if (xhr.status !== 200) {
+            form.innerHTML = "Sorry. Something went wrong.";
+        }
+    }
+    xhr.send(JSON.stringify({
+        "path": path,
+        "name": name,
+        "distill": true
+    }));
+}
+
+function registerModel(name, models, _xsrf) {
+    const xhr = new XMLHttpRequest();
+    var form = document.querySelector("form");
+    xhr.open("POST", '/model?_xsrf=' + _xsrf, true);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.onreadystatechange = () => { // Call a function when the state changes.
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            // Request finished. Do processing here.
+            form.innerHTML = "Done!";
+            location.replace("/"); // redirect to try-out page
+        } else if (xhr.status !== 200) {
+            form.innerHTML = "Sorry. Something went wrong.";
+        }
+    }
+    xhr.send(JSON.stringify({
+        "models": models,
+        "name": name,        
+    }));
+}
+
+</script>
+</body>
+</html>

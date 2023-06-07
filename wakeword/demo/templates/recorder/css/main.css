@@ -1,0 +1,172 @@
+:root {
+    --c-bkg: #fff;
+    --c-txt: #181818;
+}
+
+body {
+    font-family: 'Segoe UI', 'Open Sans', sans-serif;
+    background: var(--c-bkg);
+    color: var(--c-txt);
+    padding: 32px;
+    display: flex;
+    flex-direction: row;
+}
+
+#submit,
+button {
+    cursor: pointer;
+}
+
+.ww_name 
+{
+    margin: 6px 0;
+}
+
+.btn-start-recording,
+.btn-stop-recording {
+    background: transparent;
+}
+
+.btn-stop-recording {
+    display: none;
+}
+
+.description {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    padding-right: 16px;
+}
+
+.description #imgHolder {
+    text-align: left;
+}
+
+.description h1 {
+    font-size: 44px;
+    color: var(--c-txt);
+    margin-bottom: 16px;
+    margin-top: 16px;
+}
+
+.description p {
+    font-weight: 300;
+    font-size: 28px;
+}
+
+.recordStuff {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 10%;
+    position: relative;
+}
+
+.recordBackground {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.recordBackground img {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    width: 100%;
+}
+
+.recordContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+}
+
+.record {
+    margin: auto;
+    font-size: 24px;
+    opacity: 1;
+    border-radius: 25px;
+    background: #ffffff;
+    padding: 32px;
+    box-shadow: 0 0 10px #ACC0F2;
+    max-width: 55%;
+    min-width: 55%;
+}
+
+.record h6 {
+    font-weight: bold;
+}
+
+.record #transcription {
+    line-height: 1.5em;
+    min-height: 7.5em;
+}
+
+.record audio {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.record fieldset {
+    text-align: center;
+    background: #F1F3F4;
+    border-radius: 64px;
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+.record label {
+    font-weight: bold;
+    padding-right: 16px;
+}
+
+.record #submit {
+    width: 100%;
+    background: #B3214C;
+    border-radius: 64px;
+    padding: 16px;
+    color: #fff;
+    font-weight: bold;
+    -webkit-appearance: none;
+}
+
+@media (max-width: 900px), (orientation: portrait) {
+    body {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .description {
+        padding: 32px;
+        width: auto;
+    }
+
+    .description img {
+        height: 16px;
+    }
+
+    .description h1 {
+        font-size: 30px;
+    }
+
+    .description p {
+        font-size: 20px;
+    }
+
+    .recordBackground img {
+        padding-top: 0;
+    }
+
+    .record {
+        padding: 16px;
+        max-width: 80%;
+        min-width: 80%;
+        font-size: 15px;
+    }
+}
