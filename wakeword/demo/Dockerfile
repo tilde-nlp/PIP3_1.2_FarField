@@ -13,9 +13,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN apt-get update \
         && apt-get install -y --no-install-recommends dialog
 
-RUN apt-get install -y libsndfile1
+RUN apt-get install -y libsndfile1 wget
 
-RUN ls
+RUN cd models && \
+    wget https://github.com/harvard-edge/multilingual_kws/releases/download/v0.1-alpha/multilingual_context_73_0.8011.tar.gz && \
+    tar -xzf multilingual_context_73_0.8011.tar.gz && \ 
+    rm multilingual_context_73_0.8011.tar.gz
 
 EXPOSE 8080 8083
 
