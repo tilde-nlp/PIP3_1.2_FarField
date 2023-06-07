@@ -1,0 +1,3 @@
+[submodule "wakeword/demo/multilingual_kws"]
+	path = wakeword/demo/multilingual_kws
+	url = git@github.com:harvard-edge/multilingual_kws.git
