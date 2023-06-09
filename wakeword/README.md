@@ -136,4 +136,4 @@ If your machine does not have GPU, you can omit `--gpus all` from the command. F
 Finally, open the recorder web-page (https://localhost:8083/record) in your browser and record audio examples of new wake-word. Model will be automatically trained and added to demonstration UI (https://localhost:8083) for testing.
 
 ## Video
-<video src='video.mp4' />
+![](video.mp4)
