@@ -81,8 +81,8 @@ other speech, (3) background noise.
 The core of our neural network classifier is a multilingual speech embedding model. The speech embedding model, similar to word embedding models for text, maps speech to a vector-space by retrieving phonetic, acoustic and other information from the spectrogram. The speech embedding network is based on the EfficientNet-B0 with 6 additional dense layers and a softmax layer on top. This neural network was pre-trained to classify speech input in to 761 classes, corresponding to 760 different words from 9 languages and background sound class. For wake-word detection the last layer is replaced with a softmax layer which outputs the probability of the input belonging to one of the 3 classes.
 
 The demonstration prototype consists of a front-end HTML/JS page and a back-end server (see Figure 2), which communicate using Websocket protocol. The front-end records audio using the Javascript Web Audio API directly from the device’s microphone. The audio is streamed to the back-end server as raw PCM mono using 1 sec sliding window with 0.2 sec overlap. The server processes each 1 sec chunk of audio independently by performing sampling rate conversion (to 16 kHz), computing spectrogram and feeding it into wake-word recognition model. The output of the model (class probabilities) is then sent back to the front-end. Then the front-end makes the decision whether wake-word was detected using the threshold that can adjusted by the user.
-
-![](prototype_architecture.png)
+    
+![](https://github.com/tilde-nlp/PIP3_1.2_FarField/blob/master/wakeword/prototype_architecture.png?raw=true)
 
 ### Trying out the pre-trained models
 The easiest way to test the pre-trained models is to use Docker.
@@ -136,4 +136,4 @@ If your machine does not have GPU, you can omit `--gpus all` from the command. F
 Finally, open the recorder web-page (https://localhost:8083/record) in your browser and record audio examples of new wake-word. Model will be automatically trained and added to demonstration UI (https://localhost:8083) for testing.
 
 ## Video
-![](video.mp4)
+https://github.com/tilde-nlp/PIP3_1.2_FarField/blob/master/wakeword/video.mp4?raw=true
