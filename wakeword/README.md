@@ -68,9 +68,30 @@ As a result, sets of negative audio samples of the following size were obtained 
 
 In addition negative example set was extended with public Multilingual Spoken Word Corpus (MSWC) [https://mlcommons.org/en/multilingual-spoken-words/]
 
-Both negative and positive samples can be found in "dataset" directory
+Both negative and positive samples can be found in "dataset" directory.
 
 ## Data augmentation
+
+To improve the robustness of the models to far-field conditions we apply multiple data augmentations from Audiomentations library:
+
+- ApplyImpulseResponse - apply impulse responses from MIT IR Survey dataset;
+- AddGausianNoise - add Gaussian noise;
+- Gain - reduce the volume by a random amplitude factor;
+- PitchShift - pitch shift the sound up or down without changing the tempo;
+- TimeStretch - change the speed or duration without changing the pitch;
+- Normalize - normalize the volume.
+- RoomSimulator - simulates random microphone locations within a random synthetic room. 
+
+In an attempt to simulate different conditions, we also tried to combine these augmentations together. In this repo provide the combinations that achieved the best results:
+- Gain + ApplyImpulseResponse
+- Gain + RoomSimulator
+- AddGausianNoise + Gain
+- AddGausianNoise + ApplyImpulseResponse
+- AddGausianNoise + RoomSimulator
+- AddGausianNoise + Gain + ApplyImpulseResponse
+- AddGausianNoise + Gain + RoomSimulator
+
+Augmented dataset files can be found in "dataset_processed" directory.
 
 ## Prototype
 
@@ -110,7 +131,7 @@ The Docker image also supports GPU acceleration, that can be enabled as follows:
 ### Few-shot learning
 The front-end also enables user to record 5 examples of new custom wake-word and submit them to back-end server for model training. The server creates negative examples by cutting
 parts of 5 submitted recordings and padding them with silence. Negative example set is further expanded by adding background noise examples and random 20 files from [MSWC](https://mlcommons.org/en/multilingual-spoken-words/). On top of data augmentation performed in the [base model](https://github.com/harvard-edge/multilingual_kws) we apply the following augmentation functions from Audiomentations library to increase the number of examples 7-fold:
-- ApplyImpulseResponse - apply impulse responses from MIT IR Survey dataset [3];
+- ApplyImpulseResponse - apply impulse responses from MIT IR Survey dataset;
 - AddGausianNoise - add Gaussian noise;
 - Gain - reduce the volume by a random amplitude factor;
 - PitchShift - pitch shift the sound up or down without changing the tempo;
