@@ -1,4 +1,4 @@
-# Wake-word detection
+# Few-shot Wake-word Detection with Data Augmentation for Robustness for Far-Field 
 
 This directory contains prototype for near- and far-field wake-word detection for LV, LT, EE, RU, EN languages.
 
@@ -110,13 +110,13 @@ The easiest way to test the pre-trained models is to use Docker.
 
 First, build the Docker image:
 ```bash
-   cd demo
-   docker build -t wakeword-demo .
+cd demo
+docker build -t wakeword-demo .
 ```
 
 Next, run the Docker container and set forwarding for ports 8083 and 8080:
 ```bash
-   docker run -p 8080:8080 -p 8083:8083 wakeword-demo:latest 
+docker run -p 8080:8080 -p 8083:8083 wakeword-demo:latest 
 ```
 
 Port 8080 is for regular HTTP endpoint, while port 8083 provides HTTPS (via self-signed certificate). Most browsers will require you to use HTTPS to allow access to the microphone. 
@@ -125,7 +125,7 @@ Finally, open the demonstration web-page (https://localhost:8083) in your browse
 
 The Docker image also supports GPU acceleration, that can be enabled as follows:
 ```bash
-    docker run --gpus all -p 8080:8080 -p 8083:8083 wakeword-demo:latest 
+docker run --gpus all -p 8080:8080 -p 8083:8083 wakeword-demo:latest 
 ```
 
 ### Few-shot learning
@@ -143,18 +143,18 @@ During the training, the model output layer and last 20 layers of the embedding 
 
 To easiest way to test the few-shot learning you need to build the Docker image:
 ```bash
-   cd demo
-   docker build -t wakeword-demo .
+cd demo
+docker build -t wakeword-demo .
 ```
 
 Next, run the Docker container and set forwarding for ports 8083 and 8080:
 ```bash
-   docker run -p 8080:8080 -p 8083:8083 --gpus all wakeword-demo:latest 
+docker run -p 8080:8080 -p 8083:8083 --gpus all wakeword-demo:latest 
 ```
 
 If your machine does not have GPU, you can omit `--gpus all` from the command. Fine-tuning on CPU is slower and maybe take more than 10 minutes.
 
-Finally, open the recorder web-page (https://localhost:8083/record) in your browser and record audio examples of new wake-word. Model will be automatically trained and added to demonstration UI (https://localhost:8083) for testing.
+Finally, open the recorder web-page (https://localhost:8083/record) in your browser and record audio examples of a new wake-word. Model will be automatically trained and added to demonstration UI (https://localhost:8083) for testing.
 
 ## Video
 https://github.com/tilde-nlp/PIP3_1.2_FarField/blob/master/wakeword/video.mp4?raw=true
