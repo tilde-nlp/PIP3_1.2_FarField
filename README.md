@@ -4,4 +4,4 @@ This is the prototype created in activity 1.2 of the project "AI Assistant for M
 
 Repository consists of following directories:
 - wakeword - dataset, scripts and models developed within the activity 1.2 to enable near- and far-field wake-word detection for LV, LT, EE languages 
-
+- ASR - prototype that runs improved ASR model for difficult acoustic conditions (far-field, telephone etc))
